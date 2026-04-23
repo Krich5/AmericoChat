@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Americo Chat Widget – Test Harness</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --americo-blue: #003366;
+      --americo-blue-light: #004080;
+      --accent: #0055b3;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --border: #dce3ed;
+      --text: #1a2535;
+      --muted: #6b7a93;
+      --success: #1a7f4b;
+      --success-bg: #e6f5ed;
+      --mono: 'DM Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--americo-blue);
+      color: white;
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 3px solid #0055b3;
+    }
+
+    .logo {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      background: #0055b3;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #a8c8f0;
+    }
+
+    .header-right {
+      font-size: 0.75rem;
+      color: #7aaad4;
+      font-family: var(--mono);
+    }
+
+    /* ── Layout ── */
+    main {
+      flex: 1;
+      max-width: 800px;
+      margin: 2.5rem auto;
+      width: 100%;
+      padding: 0 1.5rem;
+    }
+
+    .page-title {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--americo-blue);
+      margin-bottom: 0.3rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.75rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .card-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Form ── */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    input {
+      font-family: var(--mono);
+      font-size: 0.875rem;
+      padding: 0.6rem 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s;
+      background: #fafbfd;
+      color: var(--text);
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      background: white;
+    }
+
+    input::placeholder {
+      color: #b0b9c8;
+    }
+
+    .field-hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    /* ── Button ── */
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    button {
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.6rem 1.4rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--americo-blue);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--americo-blue-light);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+
+    /* ── Status ── */
+    #status {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-family: var(--mono);
+    }
+
+    #status.success {
+      display: block;
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid #a3d9bc;
+    }
+
+    /* ── Code preview ── */
+    .code-block {
+      background: #111827;
+      color: #e2e8f0;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      padding: 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .code-comment { color: #6b7a93; }
+    .code-key { color: #7dd3fc; }
+    .code-val { color: #86efac; }
+    .code-tag { color: #f9a8d4; }
+    .code-str { color: #fde68a; }
+
+    /* ── Info strip ── */
+    .info-strip {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      font-size: 0.82rem;
+      color: #1e40af;
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+    }
+
+    .info-icon { flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    Americo
+    <span class="logo-badge">Chat Test Harness</span>
+  </div>
+  <div class="header-right">WxCC · PHS · Webex Connect</div>
+</header>
+
+<main>
+  <p class="page-title">Developer Tool</p>
+  <h1>Chat Widget Test</h1>
+  <p class="subtitle">Simulate portal-authenticated user data being passed to the Webex Connect chat widget.</p>
+
+  <!-- Input Card -->
+  <div class="card">
+    <div class="card-label">Simulate Portal Session</div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="inputName">Customer Name</label>
+        <input id="inputName" type="text" placeholder="e.g. Jane Smith" />
+        <span class="field-hint">→ portalUserName</span>
+      </div>
+      <div class="field">
+        <label for="inputAccount">Account / Policy Number</label>
+        <input id="inputAccount" type="text" placeholder="e.g. POL-00123456" />
+        <span class="field-hint">→ portalAccountNum</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="injectAndLaunch()">Inject &amp; Launch Chat</button>
+      <button class="btn-secondary" onclick="resetForm()">Reset</button>
+    </div>
+
+    <div id="status" class="success"></div>
+  </div>
+
+  <!-- Live code preview -->
+  <div class="card">
+    <div class="card-label">Live Payload Preview</div>
+    <div class="code-block" id="codePreview"><span class="code-comment">// Fill in fields above to see the injected payload</span>
+<span class="code-tag">&lt;script&gt;</span>
+  <span class="code-key">var</span> chatCustomFields = {
+    <span class="code-key">name</span>: <span class="code-val" id="previewName">"—"</span>,
+    <span class="code-key">accountNumber</span>: <span class="code-val" id="previewAccount">"—"</span>
+  };
+  <span class="code-key">var</span> divicw = document.getElementById(<span class="code-str">"divicw"</span>);
+  divicw.setAttribute(<span class="code-str">"data-custom-fields"</span>, JSON.stringify(chatCustomFields));
+<span class="code-tag">&lt;/script&gt;</span></div>
+  </div>
+
+  <div class="info-strip">
+    <span class="info-icon">ℹ️</span>
+    <span>The <strong>data-bind</strong> and <strong>data-guid</strong> values below are Americo's real Control Hub–generated identifiers. The Cisco widget script is untouched — only the custom fields injection above is added.</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- The actual Webex widget (hidden until launched) -->
+  <div id="divicw"
+    data-bind="3B277380-AE8A-4420-9477-6CE45DCF3649"
+    data-org=""
+    data-guid="cf2debdb-56ab-4457-8cb8-dd6c6fed2b41">
+  </div>
+
+</main>
+
+<footer>americo_chat_test.html · For internal testing only · Not for production use</footer>
+
+<!-- ── JS: Portal injection logic ── -->
+<script>
+  // Live preview updater
+  document.getElementById('inputName').addEventListener('input', updatePreview);
+  document.getElementById('inputAccount').addEventListener('input', updatePreview);
+
+  function updatePreview() {
+    var name = document.getElementById('inputName').value || '—';
+    var acct = document.getElementById('inputAccount').value || '—';
+    document.getElementById('previewName').textContent = '"' + name + '"';
+    document.getElementById('previewAccount').textContent = '"' + acct + '"';
+  }
+
+  function injectAndLaunch() {
+    var name = document.getElementById('inputName').value.trim();
+    var acct = document.getElementById('inputAccount').value.trim();
+
+    if (!name || !acct) {
+      alert('Please enter both a name and account number to simulate the portal session.');
+      return;
+    }
+
+    try {
+      // Build the custom fields object — same structure as production
+      var chatCustomFields = {
+        name: name,
+        accountNumber: acct
+      };
+
+      // Inject onto the divicw element BEFORE the Cisco script runs
+      var divicw = document.getElementById('divicw');
+      divicw.setAttribute('data-custom-fields', JSON.stringify(chatCustomFields));
+
+      // Status
+      var status = document.getElementById('status');
+      status.className = 'success';
+      status.textContent = '✓ Injected → data-custom-fields: ' + JSON.stringify(chatCustomFields);
+
+      // Now load the Cisco widget script (only load once)
+      if (!window._widgetLoaded) {
+        window._widgetLoaded = true;
+        var t = document.createElement('script');
+        t.src = 'https://media.imi.chat/widget/js/imichatinit.js?t=' + new Date().toISOString();
+        t.addEventListener('load', function() {
+          console.log(new Date().toISOString(), 'Livechat script loaded successfully!');
+        });
+        t.addEventListener('error', function() {
+          console.log(new Date().toISOString(), 'Error loading Livechat script');
+        });
+        divicw.insertAdjacentElement('afterend', t);
+      }
+
+    } catch(e) {
+      console.error('Chat injection error:', e);
+    }
+  }
+
+  function resetForm() {
+    document.getElementById('inputName').value = '';
+    document.getElementById('inputAccount').value = '';
+    document.getElementById('previewName').textContent = '"—"';
+    document.getElementById('previewAccount').textContent = '"—"';
+    document.getElementById('status').style.display = 'none';
+    document.getElementById('status').className = '';
+    window._widgetLoaded = false;
+  }
+</script>
+
+</body>
+</html>
