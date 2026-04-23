@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Americo</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body, html { height: 100%; }
 
-    /* Full page image */
     body {
       background: url('landingpage.png') center/cover no-repeat;
       height: 100vh;
@@ -96,7 +95,6 @@
       cursor: pointer;
       font-family: sans-serif;
     }
-
     .modal-btn:hover { background: #002244; }
 
     .modal-status {
@@ -146,22 +144,38 @@
   function injectAndLaunch() {
     var name = document.getElementById('inputName').value.trim();
     var acct = document.getElementById('inputAccount').value.trim();
-    var s = document.getElementById('status');
+    var s    = document.getElementById('status');
 
     if (!name || !acct) { alert('Enter both fields.'); return; }
 
-    var chatCustomFields = { name: name, accountNumber: acct };
-    document.getElementById('divicw').setAttribute('data-custom-fields', JSON.stringify(chatCustomFields));
-
     s.style.display = 'block';
-    s.textContent = '✓ ' + JSON.stringify(chatCustomFields);
+    s.textContent = '✓ ' + JSON.stringify({ name: name, accountNumber: acct });
 
+    // Load the Cisco widget script once
     if (!window._widgetLoaded) {
       window._widgetLoaded = true;
+
       var t = document.createElement('script');
       t.src = 'https://media.imi.chat/widget/js/imichatinit.js?t=' + new Date().toISOString();
       document.getElementById('divicw').insertAdjacentElement('afterend', t);
     }
+
+    // Wait for widget to be ready, then pass data via imichatwidget.init()
+    var wait = setInterval(function() {
+      if (typeof imichatwidget === 'undefined') return;
+      if (typeof imichatwidget.on === 'undefined') return;
+      clearInterval(wait);
+
+      imichatwidget.on('imichat-widget:ready', function() {
+        imichatwidget.init(JSON.stringify({
+          custom_chat_fields: {
+            name: name,
+            accountNumber: acct
+          }
+        }), function() {});
+      });
+
+    }, 250);
 
     setTimeout(function() { document.querySelector('.modal').classList.remove('open'); }, 1500);
   }
